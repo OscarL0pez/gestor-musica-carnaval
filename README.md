@@ -1,22 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎭 Mi Música de Carnaval
 
-## Getting Started
+Una aplicación web sencilla y personal para gestionar tu colección de música de carnaval.
 
-First, run the development server:
+## ✨ Características
+
+- **Gestión Simple**: Agregar canciones con información básica (título, artista, género, duración)
+- **Búsqueda Rápida**: Encuentra canciones por título, artista o género
+- **Filtros por Género**: Organiza tu música por estilo
+- **Favoritos**: Marca tus canciones preferidas
+- **Información Detallada**: BPM, tonalidad, duración y más datos musicales
+- **Diseño Responsivo**: Optimizado para todos los dispositivos
+- **Almacenamiento Local**: Datos guardados automáticamente en el navegador
+
+## 🚀 Tecnologías
+
+- **Next.js 15**: Framework React con App Router
+- **TypeScript**: Tipado estático para mejor desarrollo
+- **Tailwind CSS**: Estilos utilitarios modernos
+- **Lucide React**: Iconos elegantes y vectoriales
+- **Radix UI**: Componentes accesibles de alta calidad
+
+## 🛠️ Instalación y Uso
+
+### Desarrollo Local
 
 ```bash
+# Clonar el repositorio
+git clone [tu-repositorio]
+cd gestor-musica-carnaval
+
+# Instalar dependencias
+npm install
+
+# Iniciar servidor de desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Despliegue en Vercel
+
+1. Conecta tu repositorio a Vercel
+2. Vercel detectará automáticamente que es un proyecto Next.js
+3. ¡Despliega con un clic!
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=YOUR_REPO_URL)
+
+## 📱 Funcionalidades
+
+### Agregar Canciones
+- Título, artista y género (obligatorios)
+- Duración en segundos
+- BPM (beats por minuto)
+- Tonalidad musical
+- Año de lanzamiento
+- Álbum
+- Etiquetas personalizadas
+- Marcar como favorita
+
+### Organización
+- **Filtros por género**: Ve solo las canciones del estilo que necesitas
+- **Búsqueda inteligente**: Encuentra canciones por cualquier campo
+- **Vistas múltiples**: Cuadrícula para explorar, lista para detalles
+- **Favoritos**: Acceso rápido a tus canciones preferidas
+
+## 🎨 Capturas de Pantalla
+
+*[Las capturas se agregarán después del primer despliegue]*
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit tus cambios (`git commit -m 'Agregar nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+
+## 🎵 Desarrollado para la Comunidad del Carnaval
+
+Creado con ❤️ para ayudar a los organizadores de carnaval a gestionar su música de manera eficiente.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
