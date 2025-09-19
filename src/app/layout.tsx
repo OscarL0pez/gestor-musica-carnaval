@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-// Forzar actualización de metadatos - v2
+// Forzar actualización de metadatos - v3 - 19/09/2025
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Comparsa Moreno Polo - La Junquillera 2025",
-  description: "Aplicación oficial de la Comparsa Moreno Polo de Marbella. Gestión de repertorio musical, calendario de eventos y organización para la temporada de carnaval 2025.",
+  description: "Aplicación oficial de la Comparsa Moreno Polo de La Línea. Gestión de repertorio musical, calendario de eventos y organización para la temporada de carnaval 2025.",
   keywords: "Comparsa Moreno Polo, La Linea, Carnaval 2025, La Junquillera, música, repertorio, eventos",
   authors: [{ name: "Comparsa Moreno Polo" }],
   creator: "Comparsa Moreno Polo",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Comparsa Moreno Polo - La Junquillera 2025",
-    description: "Aplicación oficial de la Comparsa Moreno Polo de Marbella. Gestión de repertorio musical, calendario de eventos y organización para la temporada de carnaval 2025.",
+    description: "Aplicación oficial de la Comparsa Moreno Polo de La Línea. Gestión de repertorio musical, calendario de eventos y organización para la temporada de carnaval 2025.",
     url: 'https://comparsamorenopolo.com',
     siteName: 'Comparsa Moreno Polo',
     images: [
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: "Comparsa Moreno Polo - La Junquillera 2025",
-    description: "Aplicación oficial de la Comparsa Moreno Polo de Marbella para la temporada de carnaval 2025.",
+    description: "Aplicación oficial de la Comparsa Moreno Polo de La Línea para la temporada de carnaval 2025.",
     images: ['/images/carnaval-logo.png'],
   },
   robots: {
