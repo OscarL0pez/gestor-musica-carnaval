@@ -1,0 +1,21 @@
+{
+  "name": "Comparsa Moreno Polo - La Junquillera 2025",
+  "short_name": "Moreno Polo",
+  "description": "Aplicación oficial de la Comparsa Moreno Polo de Marbella para la temporada de carnaval 2025",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#dc2626",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/carnaval-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["music", "entertainment", "lifestyle"],
+  "lang": "es",
+  "scope": "/"
+}
