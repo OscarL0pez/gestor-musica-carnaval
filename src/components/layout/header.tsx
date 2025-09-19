@@ -69,41 +69,32 @@ export function Header({ user, onLogout }: HeaderProps) {
                 </span>
               </div>
               
-              <div
+              <button
+                type="button"
                 onClick={() => {
-                  console.log('Logout clicked - direct div');
-                  // Primero intentar el logout normal
+                  console.log('🔴 LOGOUT BUTTON CLICKED');
+                  
+                  // Método 1: Usar función onLogout si está disponible
                   if (typeof onLogout === 'function') {
+                    console.log('📞 Calling onLogout function');
                     onLogout();
-                  } else {
-                    console.error('onLogout is not a function:', onLogout);
                   }
                   
-                  // Backup: forzar logout eliminando localStorage y recargando
+                  // Método 2: Backup directo
+                  console.log('🗑️ Clearing localStorage backup');
+                  localStorage.removeItem('carnaval-auth');
+                  
+                  // Método 3: Forzar recarga completa
+                  console.log('🔄 Forcing page reload');
                   setTimeout(() => {
-                    localStorage.removeItem('carnaval-auth');
-                    window.location.reload();
-                  }, 100);
+                    window.location.href = '/';
+                  }, 200);
                 }}
-                className="flex items-center space-x-1 border-2 border-red-300 text-red-700 hover:bg-red-50 hover:text-red-900 hover:border-red-400 transition-colors p-2 sm:px-3 rounded-md bg-white cursor-pointer select-none font-medium shadow-sm hover:shadow-md"
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    if (typeof onLogout === 'function') {
-                      onLogout();
-                    }
-                    setTimeout(() => {
-                      localStorage.removeItem('carnaval-auth');
-                      window.location.reload();
-                    }, 100);
-                  }
-                }}
+                className="flex items-center space-x-1 border-2 border-red-500 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 hover:border-red-600 transition-all duration-200 p-2 sm:px-4 sm:py-2 rounded-lg cursor-pointer select-none font-semibold shadow-sm hover:shadow-md active:scale-95 transform"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">Salir</span>
-              </div>
+              </button>
             </div>
           )}
         </div>

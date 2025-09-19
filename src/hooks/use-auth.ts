@@ -79,13 +79,30 @@ export function useAuth() {
   // Función de logout
   const logout = () => {
     console.log('Logout function called'); // Debug log
-    localStorage.removeItem('carnaval-auth');
-    setAuthState({
-      user: null,
-      isAuthenticated: false,
-      isLoading: false
-    });
-    console.log('User logged out successfully'); // Debug log
+    
+    try {
+      // Limpiar localStorage
+      localStorage.removeItem('carnaval-auth');
+      
+      // Resetear estado
+      setAuthState({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false
+      });
+      
+      console.log('User logged out successfully'); // Debug log
+      
+      // Forzar recarga completa de la página para resetear completamente el estado
+      setTimeout(() => {
+        window.location.href = window.location.pathname;
+      }, 100);
+      
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Si hay error, forzar recarga de emergencia
+      window.location.reload();
+    }
   };
 
   // Verificar si el usuario es administrador
