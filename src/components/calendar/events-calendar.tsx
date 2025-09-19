@@ -40,8 +40,13 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
     otro: 'text-purple-600 border-purple-200 bg-purple-50'
   };
 
-  const sortedEvents = events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const upcomingEvents = sortedEvents.filter(event => new Date(event.date) >= new Date());
+  const getEventDateTime = (event: Event) => {
+    return new Date(`${event.date}T${event.time}`);
+  };
+
+  const now = new Date();
+  const sortedEvents = events.sort((a, b) => getEventDateTime(a).getTime() - getEventDateTime(b).getTime());
+  const upcomingEvents = sortedEvents.filter(event => getEventDateTime(event) >= now);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -347,11 +352,11 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
       </div>
 
       {/* Eventos pasados */}
-      {sortedEvents.filter(event => new Date(event.date) < new Date()).length > 0 && (
+      {sortedEvents.filter(event => getEventDateTime(event) < now).length > 0 && (
         <div className="grid gap-4">
           <h3 className="text-lg font-semibold text-gray-800">Eventos Pasados</h3>
           {sortedEvents
-            .filter(event => new Date(event.date) < new Date())
+            .filter(event => getEventDateTime(event) < now)
             .slice(0, 3)
             .map((event) => {
               const IconComponent = eventTypeIcons[event.type];
