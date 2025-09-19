@@ -248,7 +248,7 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
               <p className="text-gray-500">No hay eventos próximos programados</p>
               {isAdmin && (
                 <p className="text-gray-400 text-sm mt-2">
-                  ¡Usa el botón "Nuevo Evento" para añadir el primer evento!
+                  ¡Usa el botón &quot;Nuevo Evento&quot; para añadir el primer evento!
                 </p>
               )}
             </CardContent>
