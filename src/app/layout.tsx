@@ -80,6 +80,12 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Moreno Polo" />
         <link rel="apple-touch-icon" href="/images/carnaval-logo.png" />
+        
+        {/* Meta tags específicos para WhatsApp */}
+        <meta property="og:site_name" content="Comparsa Moreno Polo" />
+        <meta property="og:updated_time" content={new Date().toISOString()} />
+        <meta name="twitter:site" content="@comparsamorenopolo" />
+        <meta name="application-name" content="Comparsa Moreno Polo" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
