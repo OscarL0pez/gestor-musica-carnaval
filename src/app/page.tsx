@@ -28,7 +28,6 @@ export default function Home() {
     isAuthenticated, 
     isLoading: authLoading, 
     login, 
-    logout, 
     isAdmin, 
     user 
   } = useAuth();
@@ -76,8 +75,9 @@ export default function Home() {
       </div>
       
       <Header user={user} onLogout={() => {
-        console.log('Logout called from Header');
-        logout();
+        // LOGOUT DIRECTO
+        localStorage.clear();
+        window.location.href = '/';
       }} />
       
       <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8 relative z-10">

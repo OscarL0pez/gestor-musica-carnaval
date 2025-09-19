@@ -72,28 +72,18 @@ export function Header({ user, onLogout }: HeaderProps) {
               <button
                 type="button"
                 onClick={() => {
-                  console.log('🔴 LOGOUT BUTTON CLICKED');
-                  
-                  // Método 1: Usar función onLogout si está disponible
-                  if (typeof onLogout === 'function') {
-                    console.log('📞 Calling onLogout function');
-                    onLogout();
-                  }
-                  
-                  // Método 2: Backup directo
-                  console.log('🗑️ Clearing localStorage backup');
-                  localStorage.removeItem('carnaval-auth');
-                  
-                  // Método 3: Forzar recarga completa
-                  console.log('🔄 Forcing page reload');
-                  setTimeout(() => {
-                    window.location.href = '/';
-                  }, 200);
+                  // LOGOUT ULTRA SIMPLE
+                  localStorage.clear();
+                  window.location.href = '/';
                 }}
-                className="flex items-center space-x-1 border-2 border-red-500 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 hover:border-red-600 transition-all duration-200 p-2 sm:px-4 sm:py-2 rounded-lg cursor-pointer select-none font-semibold shadow-sm hover:shadow-md active:scale-95 transform"
+                className="flex items-center space-x-1 bg-red-500 text-white hover:bg-red-600 transition-colors p-3 rounded-lg cursor-pointer font-bold shadow-lg hover:shadow-xl"
+                style={{ 
+                  minWidth: '80px',
+                  minHeight: '44px'
+                }}
               >
-                <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Salir</span>
+                <LogOut className="h-5 w-5" />
+                <span className="hidden sm:inline text-sm">SALIR</span>
               </button>
             </div>
           )}
