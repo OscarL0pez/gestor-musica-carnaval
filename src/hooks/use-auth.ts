@@ -10,7 +10,7 @@ const ADMIN_CREDENTIALS = {
 };
 
 const USER_CREDENTIALS = {
-  username: 'Usuario',
+  username: 'Comparsa',
   password: 'morenopolo'
 };
 
