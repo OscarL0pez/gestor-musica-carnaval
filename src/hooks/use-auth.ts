@@ -5,13 +5,13 @@ import { User, AuthState } from '@/types';
 
 // Credenciales hardcodeadas (en producción esto debería estar en un backend seguro)
 const ADMIN_CREDENTIALS = {
-  username: 'admin',
-  password: 'carnaval2025'
+  username: 'Admin',
+  password: 'morenopolo'
 };
 
 const USER_CREDENTIALS = {
-  username: 'usuario',
-  password: 'carnaval'
+  username: 'Usuario',
+  password: 'morenopolo'
 };
 
 export function useAuth() {
@@ -78,12 +78,14 @@ export function useAuth() {
 
   // Función de logout
   const logout = () => {
+    console.log('Logout function called'); // Debug log
     localStorage.removeItem('carnaval-auth');
     setAuthState({
       user: null,
       isAuthenticated: false,
       isLoading: false
     });
+    console.log('User logged out successfully'); // Debug log
   };
 
   // Verificar si el usuario es administrador

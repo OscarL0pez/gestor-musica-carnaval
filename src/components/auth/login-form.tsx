@@ -126,18 +126,6 @@ export function LoginForm({ onLogin }: LoginFormProps) {
               {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </Button>
           </form>
-
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Credenciales de acceso:</h4>
-            <div className="text-xs text-gray-600 space-y-1">
-              <div>
-                <strong>Administrador:</strong> admin / carnaval2025
-              </div>
-              <div>
-                <strong>Usuario:</strong> usuario / carnaval
-              </div>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>

@@ -8,8 +8,9 @@ import { Header } from '@/components/layout/header';
 import { SongCard } from '@/components/song-card';
 import { SongForm } from '@/components/song-form';
 import { LoginForm } from '@/components/auth/login-form';
+import { EventsCalendar } from '@/components/calendar/events-calendar';
 import { Button } from '@/components/ui/button';
-import { Plus, Music } from 'lucide-react';
+import { Plus, Music, Calendar } from 'lucide-react';
 
 export default function Home() {
   const { 
@@ -34,6 +35,7 @@ export default function Home() {
   
   const [showForm, setShowForm] = useState(false);
   const [editingSong, setEditingSong] = useState<Song | null>(null);
+  const [currentView, setCurrentView] = useState<'biblioteca' | 'calendario'>('biblioteca');
 
   const handleEditSong = (song: Song) => {
     setEditingSong(song);
@@ -62,57 +64,105 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
-      <Header user={user} onLogout={logout} />
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 relative overflow-hidden">
+      {/* Patrones decorativos de carnaval */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-10 left-10 w-20 h-20 bg-orange-400 rounded-full animate-pulse"></div>
+        <div className="absolute top-32 right-16 w-16 h-16 bg-red-400 rounded-full animate-bounce delay-1000"></div>
+        <div className="absolute bottom-20 left-20 w-24 h-24 bg-yellow-400 rounded-full animate-pulse delay-500"></div>
+        <div className="absolute bottom-40 right-10 w-12 h-12 bg-pink-400 rounded-full animate-bounce delay-700"></div>
+        <div className="absolute top-1/2 left-1/3 w-8 h-8 bg-purple-400 rounded-full animate-pulse delay-300"></div>
+        <div className="absolute top-1/3 right-1/4 w-14 h-14 bg-green-400 rounded-full animate-bounce delay-1200"></div>
+      </div>
       
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        {showForm && isAdmin() ? (
-          <SongForm
-            onSubmit={(data) => {
-              if (editingSong) {
-                updateSong(editingSong.id, data);
-              } else {
-                addSong(data);
-              }
-              setShowForm(false);
-              setEditingSong(null);
-            }}
-            onCancel={() => {
-              setShowForm(false);
-              setEditingSong(null);
-            }}
-            initialData={editingSong || undefined}
-          />
-        ) : (
+      <Header user={user} onLogout={() => {
+        console.log('Logout called from Header');
+        logout();
+      }} />
+      
+      <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8 relative z-10">
+        {/* Navegación entre vistas */}
+        <div className="flex justify-center mb-6">
+          <div className="flex bg-white rounded-lg p-1 shadow-md">
+            <Button
+              onClick={() => setCurrentView('biblioteca')}
+              variant={currentView === 'biblioteca' ? 'default' : 'ghost'}
+              className={`flex items-center gap-2 transition-all duration-300 ${
+                currentView === 'biblioteca' 
+                  ? 'bg-orange-600 text-white shadow-md' 
+                  : 'text-gray-600 hover:text-orange-600'
+              }`}
+            >
+              <Music className="h-4 w-4" />
+              Biblioteca Musical
+            </Button>
+            <Button
+              onClick={() => setCurrentView('calendario')}
+              variant={currentView === 'calendario' ? 'default' : 'ghost'}
+              className={`flex items-center gap-2 transition-all duration-300 ${
+                currentView === 'calendario' 
+                  ? 'bg-orange-600 text-white shadow-md' 
+                  : 'text-gray-600 hover:text-orange-600'
+              }`}
+            >
+              <Calendar className="h-4 w-4" />
+              Calendario
+            </Button>
+          </div>
+        </div>
+
+        {/* Contenido según la vista */}
+        {currentView === 'biblioteca' ? (
           <>
-            {/* Controles superiores */}
-            <div className="flex flex-col gap-4 mb-8">
+            {showForm && isAdmin() ? (
+              <SongForm
+                onSubmit={(data) => {
+                  if (editingSong) {
+                    updateSong(editingSong.id, data);
+                  } else {
+                    addSong(data);
+                  }
+                  setShowForm(false);
+                  setEditingSong(null);
+                }}
+                onCancel={() => {
+                  setShowForm(false);
+                  setEditingSong(null);
+                }}
+                initialData={editingSong || undefined}
+              />
+            ) : (
+              <>
+                {/* Controles superiores */}
+                <div className="flex flex-col gap-4 mb-6 sm:mb-8">
               {/* Solo mostrar botón de agregar si es admin */}
               {isAdmin() && (
                 <div className="flex justify-center">
                   <Button 
                     onClick={() => setShowForm(true)}
-                    className="bg-orange-600 hover:bg-orange-700 text-white flex items-center gap-2"
+                    className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white flex items-center gap-2 h-12 px-4 sm:px-6 touch-manipulation shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                   >
                     <Plus className="h-4 w-4" />
-                    Agregar Canción de Carnaval
+                    <span className="hidden sm:inline">Agregar Canción de Carnaval</span>
+                    <span className="sm:hidden">Agregar Canción</span>
                   </Button>
                 </div>
               )}
               
               {/* Filtros por género como botones */}
               <div className="flex flex-col gap-3">
-                <h3 className="text-lg font-semibold text-orange-800 text-center">Filtrar por Género</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-orange-800 text-center">Filtrar por Género</h3>
                 <div className="flex flex-wrap justify-center gap-2">
                   <Button
                     variant={selectedGenre === '' ? 'default' : 'outline'}
                     onClick={() => setSelectedGenre('')}
-                    className={`text-sm ${selectedGenre === '' 
-                      ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-                      : 'border-orange-200 text-orange-700 hover:bg-orange-50'
+                    className={`text-xs sm:text-sm h-10 px-3 sm:px-4 touch-manipulation transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md ${selectedGenre === '' 
+                      ? 'bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white' 
+                      : 'border-orange-200 text-orange-700 hover:bg-orange-50 hover:border-orange-300'
                     }`}
                   >
-                    Todos los géneros
+                    <span className="hidden sm:inline">Todos los géneros</span>
+                    <span className="sm:hidden">Todos</span>
                   </Button>
                   {genres.map(genre => {
                     const genreColors: Record<string, { active: string; inactive: string }> = {
@@ -148,7 +198,7 @@ export default function Home() {
                         key={genre}
                         variant={isSelected ? 'default' : 'outline'}
                         onClick={() => setSelectedGenre(genre)}
-                        className={`text-sm ${colorClass}`}
+                        className={`text-xs sm:text-sm h-10 px-3 sm:px-4 touch-manipulation transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md ${colorClass}`}
                       >
                         {genre}
                       </Button>
@@ -159,12 +209,12 @@ export default function Home() {
             </div>
 
             {/* Estadísticas simples */}
-            <div className="mb-6">
-              <p className="text-orange-700 font-medium">
+            <div className="mb-4 sm:mb-6">
+              <p className="text-orange-700 font-medium text-sm sm:text-base">
                 {songs.length} cancion{songs.length !== 1 ? 'es' : ''} de carnaval
                 {selectedGenre && ` • Género: ${selectedGenre}`}
                 {!isAdmin() && (
-                  <span className="ml-2 text-sm text-gray-600">
+                  <span className="ml-2 text-xs sm:text-sm text-gray-600">
                     (Solo lectura)
                   </span>
                 )}
@@ -192,15 +242,16 @@ export default function Home() {
                 {isAdmin() && (
                   <Button 
                     onClick={() => setShowForm(true)}
-                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                    className="bg-orange-600 hover:bg-orange-700 text-white h-12 touch-manipulation"
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Agregar Primera Canción
+                    <span className="hidden sm:inline">Agregar Primera Canción</span>
+                    <span className="sm:hidden">Agregar Canción</span>
                   </Button>
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
                 {songs.map((song) => (
                   <SongCard
                     key={song.id}
@@ -212,7 +263,11 @@ export default function Home() {
                 ))}
               </div>
             )}
+              </>
+            )}
           </>
+        ) : (
+          <EventsCalendar isAdmin={isAdmin()} />
         )}
       </main>
     </div>

@@ -60,7 +60,7 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       
       // Subir archivo a Supabase Storage
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('audio-files')
         .upload(fileName, file);
 
@@ -106,17 +106,22 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
+      <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle>Agregar Nueva Canción</CardTitle>
-          <Button variant="ghost" size="icon" onClick={onCancel}>
+          <CardTitle className="text-lg sm:text-xl">Agregar Nueva Canción</CardTitle>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onCancel}
+            className="h-8 w-8 sm:h-10 sm:w-10 touch-manipulation"
+          >
             <X className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
 
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <CardContent className="px-4 sm:px-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Título */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -127,7 +132,7 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
               onChange={(e) => handleInputChange('title', e.target.value)}
               placeholder="Nombre de la canción"
               required
-              className="text-base"
+              className="text-base h-12 touch-manipulation"
             />
           </div>
 
@@ -139,7 +144,7 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
             <select
               value={formData.genre}
               onChange={(e) => handleInputChange('genre', e.target.value as 'Presentación' | 'Pasodoble' | 'Cuplet' | 'Estribillo' | 'Popurrí')}
-              className="flex h-12 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-base ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
+              className="flex h-12 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-base ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 touch-manipulation"
               required
             >
               <option value="Presentación">Presentación</option>
@@ -155,7 +160,7 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Archivo de Audio
             </label>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <div className="flex-1">
                 <input
                   type="file"
@@ -167,7 +172,7 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
                 />
                 <label
                   htmlFor="audio-file"
-                  className={`flex items-center justify-center h-12 w-full border-2 border-dashed rounded-md transition-colors cursor-pointer ${
+                  className={`flex items-center justify-center h-12 sm:h-14 w-full border-2 border-dashed rounded-md transition-colors cursor-pointer touch-manipulation ${
                     isUploading 
                       ? 'border-orange-400 bg-orange-50 cursor-not-allowed' 
                       : uploadedFile 
@@ -178,19 +183,19 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
                   {isUploading ? (
                     <>
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-600 mr-2"></div>
-                      <span className="text-orange-600">Subiendo archivo...</span>
+                      <span className="text-orange-600 text-sm sm:text-base">Subiendo...</span>
                     </>
                   ) : uploadedFile ? (
                     <>
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                      <span className="text-green-700">
-                        {uploadedFile.length > 30 ? `${uploadedFile.substring(0, 30)}...` : uploadedFile}
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
+                      <span className="text-green-700 text-sm sm:text-base truncate">
+                        {uploadedFile.length > 20 ? `${uploadedFile.substring(0, 20)}...` : uploadedFile}
                       </span>
                     </>
                   ) : (
                     <>
-                      <Upload className="h-5 w-5 text-gray-400 mr-2" />
-                      <span className="text-gray-600">Seleccionar archivo de audio</span>
+                      <Upload className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
+                      <span className="text-gray-600 text-sm sm:text-base">Seleccionar archivo</span>
                     </>
                   )}
                 </label>
@@ -210,8 +215,8 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
               value={formData.lyrics}
               onChange={(e) => handleInputChange('lyrics', e.target.value)}
               placeholder="Escribe aquí la letra completa de la canción..."
-              rows={8}
-              className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-3 text-base ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 resize-y min-h-32"
+              rows={6}
+              className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-3 text-base ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 resize-y min-h-32 touch-manipulation"
             />
           </div>
 
@@ -224,10 +229,17 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
               <Input
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
-                placeholder="Ej: Clásico, Popular, Nuevo..."
+                placeholder="Ej: Clásico, Popular..."
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                className="h-12 touch-manipulation"
               />
-              <Button type="button" onClick={addTag} variant="outline" size="sm">
+              <Button 
+                type="button" 
+                onClick={addTag} 
+                variant="outline" 
+                size="sm"
+                className="h-12 px-4 touch-manipulation"
+              >
                 +
               </Button>
             </div>
@@ -236,13 +248,13 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
                 {formData.tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1 text-sm bg-orange-100 text-orange-800 rounded-full flex items-center space-x-2"
+                    className="px-3 py-2 text-sm bg-orange-100 text-orange-800 rounded-full flex items-center space-x-2"
                   >
                     <span>{tag}</span>
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
-                      className="text-orange-600 hover:text-orange-800 font-bold"
+                      className="text-orange-600 hover:text-orange-800 font-bold touch-manipulation ml-1"
                     >
                       ×
                     </button>
@@ -253,13 +265,19 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
           </div>
 
           {/* Botones */}
-          <div className="flex justify-end space-x-3 pt-6">
-            <Button type="button" variant="outline" onClick={onCancel} disabled={isUploading}>
+          <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-4 sm:pt-6">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onCancel} 
+              disabled={isUploading}
+              className="h-12 touch-manipulation"
+            >
               Cancelar
             </Button>
             <Button 
               type="submit" 
-              className="bg-orange-500 hover:bg-orange-600"
+              className="bg-orange-500 hover:bg-orange-600 h-12 touch-manipulation"
               disabled={isUploading}
             >
               <Save className="h-4 w-4 mr-2" />
