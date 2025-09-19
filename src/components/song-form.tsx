@@ -5,7 +5,8 @@ import { SongFormData } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Save, X, Upload } from 'lucide-react';
+import { Save, X, Upload, CheckCircle } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 interface SongFormProps {
   onSubmit: (data: SongFormData) => void;
@@ -23,6 +24,8 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
   });
 
   const [tagInput, setTagInput] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,10 +36,54 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setFormData(prev => ({ ...prev, audioFile: file.name }));
+    if (!file) return;
+
+    // Validar tipo de archivo
+    if (!file.type.startsWith('audio/')) {
+      alert('Por favor selecciona un archivo de audio válido');
+      return;
+    }
+
+    // Validar tamaño (máximo 50MB)
+    if (file.size > 50 * 1024 * 1024) {
+      alert('El archivo es demasiado grande. Máximo 50MB');
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      // Generar nombre único para el archivo
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      
+      // Subir archivo a Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('audio-files')
+        .upload(fileName, file);
+
+      if (error) {
+        console.error('Error subiendo archivo:', error);
+        alert('Error al subir el archivo. Inténtalo de nuevo.');
+        return;
+      }
+
+      // Obtener URL pública del archivo
+      const { data: { publicUrl } } = supabase.storage
+        .from('audio-files')
+        .getPublicUrl(fileName);
+
+      // Actualizar el formulario con la URL del archivo
+      setFormData(prev => ({ ...prev, audioFile: publicUrl }));
+      setUploadedFile(file.name);
+      
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error inesperado al subir el archivo');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -116,20 +163,41 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
                   onChange={handleFileChange}
                   className="hidden"
                   id="audio-file"
+                  disabled={isUploading}
                 />
                 <label
                   htmlFor="audio-file"
-                  className="flex items-center justify-center h-12 w-full border-2 border-dashed border-gray-300 rounded-md hover:border-orange-400 transition-colors cursor-pointer"
+                  className={`flex items-center justify-center h-12 w-full border-2 border-dashed rounded-md transition-colors cursor-pointer ${
+                    isUploading 
+                      ? 'border-orange-400 bg-orange-50 cursor-not-allowed' 
+                      : uploadedFile 
+                        ? 'border-green-400 bg-green-50'
+                        : 'border-gray-300 hover:border-orange-400'
+                  }`}
                 >
-                  <Upload className="h-5 w-5 text-gray-400 mr-2" />
-                  <span className="text-gray-600">
-                    {formData.audioFile || 'Seleccionar archivo de audio'}
-                  </span>
+                  {isUploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-600 mr-2"></div>
+                      <span className="text-orange-600">Subiendo archivo...</span>
+                    </>
+                  ) : uploadedFile ? (
+                    <>
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+                      <span className="text-green-700">
+                        {uploadedFile.length > 30 ? `${uploadedFile.substring(0, 30)}...` : uploadedFile}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-5 w-5 text-gray-400 mr-2" />
+                      <span className="text-gray-600">Seleccionar archivo de audio</span>
+                    </>
+                  )}
                 </label>
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              Formatos soportados: MP3, WAV, M4A, etc.
+              Formatos: MP3, WAV, M4A, etc. (máximo 50MB)
             </p>
           </div>
 
@@ -186,12 +254,16 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
 
           {/* Botones */}
           <div className="flex justify-end space-x-3 pt-6">
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isUploading}>
               Cancelar
             </Button>
-            <Button type="submit" className="bg-orange-500 hover:bg-orange-600">
+            <Button 
+              type="submit" 
+              className="bg-orange-500 hover:bg-orange-600"
+              disabled={isUploading}
+            >
               <Save className="h-4 w-4 mr-2" />
-              Guardar Canción
+              {isUploading ? 'Subiendo...' : 'Guardar Canción'}
             </Button>
           </div>
         </form>

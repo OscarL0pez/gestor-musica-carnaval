@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Song } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,28 @@ interface SongCardProps {
 export function SongCard({ song, isAdmin = false, onEdit, onDelete }: SongCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleDurationChange = () => setDuration(audio.duration);
+    const handleEnded = () => setIsPlaying(false);
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('durationchange', handleDurationChange);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('durationchange', handleDurationChange);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, []);
 
   const genreColors = {
     'Presentación': 'bg-blue-100 text-blue-800',
@@ -25,9 +47,29 @@ export function SongCard({ song, isAdmin = false, onEdit, onDelete }: SongCardPr
     'Popurrí': 'bg-pink-100 text-pink-800'
   };
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-    // Aquí podrías implementar la lógica real de reproducción
+  const handlePlayPause = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    try {
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      } else {
+        await audio.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.error('Error reproduciendo audio:', error);
+      // Si hay error, mostrar mensaje al usuario
+      alert('No se pudo reproducir el audio. Verifica que el archivo sea válido.');
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const handleCardClick = () => {
@@ -98,6 +140,13 @@ export function SongCard({ song, isAdmin = false, onEdit, onDelete }: SongCardPr
             {/* Reproductor de audio */}
             {song.audioFile && (
               <div className="p-4 border-b bg-white">
+                {/* Elemento audio HTML5 oculto */}
+                <audio
+                  ref={audioRef}
+                  src={song.audioFile}
+                  preload="metadata"
+                />
+                
                 <div className="flex items-center space-x-3">
                   <Button
                     onClick={handlePlayPause}
@@ -111,25 +160,40 @@ export function SongCard({ song, isAdmin = false, onEdit, onDelete }: SongCardPr
                   </Button>
                   <div className="flex-1">
                     <div className="text-sm font-medium text-gray-900">{song.title}</div>
-                    <div className="text-xs text-gray-500">{song.audioFile}</div>
+                    <div className="text-xs text-gray-500">
+                      {song.audioFile.length > 50 
+                        ? `...${song.audioFile.slice(-50)}` 
+                        : song.audioFile
+                      }
+                    </div>
                   </div>
                   <div className="text-xs text-gray-400">
                     {isPlaying ? 'Reproduciendo...' : 'Listo para reproducir'}
                   </div>
                 </div>
                 
-                {/* Barra de progreso simulada */}
+                {/* Barra de progreso real */}
                 <div className="mt-3">
                   <div className="w-full bg-gray-200 rounded-full h-1">
-                    <div className={`bg-orange-600 h-1 rounded-full transition-all duration-1000 ${
-                      isPlaying ? 'w-1/3' : 'w-0'
-                    }`}></div>
+                    <div 
+                      className="bg-orange-600 h-1 rounded-full transition-all duration-200"
+                      style={{ 
+                        width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' 
+                      }}
+                    ></div>
                   </div>
                   <div className="flex justify-between text-xs text-gray-400 mt-1">
-                    <span>0:00</span>
-                    <span>3:45</span>
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{duration > 0 ? formatTime(duration) : '--:--'}</span>
                   </div>
                 </div>
+
+                {/* Mensaje de ayuda si no hay archivo */}
+                {!song.audioFile.startsWith('http') && !song.audioFile.startsWith('/') && (
+                  <div className="mt-2 text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                    ⚠️ Para reproducir audio, necesitas una URL válida (http://) o subir el archivo al servidor.
+                  </div>
+                )}
               </div>
             )}
 
