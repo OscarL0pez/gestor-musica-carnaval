@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Comparsa Moreno Polo - La Junquillera 2025",
   description: "Aplicación oficial de la Comparsa Moreno Polo de Marbella. Gestión de repertorio musical, calendario de eventos y organización para la temporada de carnaval 2025.",
-  keywords: "Comparsa Moreno Polo, Marbella, Carnaval 2025, La Junquillera, música, repertorio, eventos",
+  keywords: "Comparsa Moreno Polo, La Linea, Carnaval 2025, La Junquillera, música, repertorio, eventos",
   authors: [{ name: "Comparsa Moreno Polo" }],
   creator: "Comparsa Moreno Polo",
   publisher: "Comparsa Moreno Polo",
