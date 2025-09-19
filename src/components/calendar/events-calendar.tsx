@@ -4,33 +4,16 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Calendar, Clock, MapPin, Users, Plus, Edit, Trash2 } from 'lucide-react';
-
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  type: 'ensayo' | 'actuacion' | 'reunion' | 'otro';
-  description?: string;
-}
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar, Clock, MapPin, Users, Plus, Edit, Trash2, Loader2 } from 'lucide-react';
+import { useEvents, Event, NewEventForm } from '@/hooks/use-events';
 
 interface EventsCalendarProps {
   isAdmin?: boolean;
 }
 
-interface NewEventForm {
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  type: 'ensayo' | 'actuacion' | 'reunion' | 'otro';
-  description: string;
-}
-
 export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
-  const [events, setEvents] = useState<Event[]>([]);
+  const { events, loading, addEvent, updateEvent, deleteEvent } = useEvents();
   const [showForm, setShowForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [formData, setFormData] = useState<NewEventForm>({
@@ -41,6 +24,7 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
     type: 'ensayo',
     description: ''
   });
+  const [formLoading, setFormLoading] = useState(false);
 
   const eventTypeIcons = {
     ensayo: Users,
@@ -59,36 +43,44 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
   const sortedEvents = events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const upcomingEvents = sortedEvents.filter(event => new Date(event.date) >= new Date());
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormLoading(true);
     
-    if (editingEvent) {
-      // Editar evento existente
-      setEvents(prev => prev.map(event => 
-        event.id === editingEvent.id 
-          ? { ...formData, id: editingEvent.id }
-          : event
-      ));
-    } else {
-      // Crear nuevo evento
-      const newEvent: Event = {
-        ...formData,
-        id: Date.now().toString()
-      };
-      setEvents(prev => [...prev, newEvent]);
-    }
+    try {
+      if (editingEvent) {
+        // Editar evento existente
+        const success = await updateEvent(editingEvent.id, formData);
+        if (!success) {
+          alert('Error al actualizar el evento');
+          return;
+        }
+      } else {
+        // Crear nuevo evento
+        const success = await addEvent(formData);
+        if (!success) {
+          alert('Error al crear el evento');
+          return;
+        }
+      }
 
-    // Resetear formulario
-    setFormData({
-      title: '',
-      date: '',
-      time: '',
-      location: '',
-      type: 'ensayo',
-      description: ''
-    });
-    setShowForm(false);
-    setEditingEvent(null);
+      // Resetear formulario
+      setFormData({
+        title: '',
+        date: '',
+        time: '',
+        location: '',
+        type: 'ensayo',
+        description: ''
+      });
+      setShowForm(false);
+      setEditingEvent(null);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al procesar el evento');
+    } finally {
+      setFormLoading(false);
+    }
   };
 
   const handleEdit = (event: Event) => {
@@ -104,8 +96,13 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
     setShowForm(true);
   };
 
-  const handleDelete = (eventId: string) => {
-    setEvents(prev => prev.filter(event => event.id !== eventId));
+  const handleDelete = async (eventId: string) => {
+    if (confirm('¿Estás seguro de que quieres eliminar este evento?')) {
+      const success = await deleteEvent(eventId);
+      if (!success) {
+        alert('Error al eliminar el evento');
+      }
+    }
   };
 
   const cancelForm = () => {
@@ -216,20 +213,36 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Descripción
                   </label>
-                  <textarea
+                  <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="Detalles adicionales del evento"
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full"
                   />
                 </div>
               </div>
               <div className="flex gap-3 pt-4">
-                <Button type="submit" className="bg-orange-600 hover:bg-orange-700">
-                  {editingEvent ? 'Guardar Cambios' : 'Crear Evento'}
+                <Button 
+                  type="submit" 
+                  className="bg-orange-600 hover:bg-orange-700"
+                  disabled={formLoading}
+                >
+                  {formLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      {editingEvent ? 'Guardando...' : 'Creando...'}
+                    </>
+                  ) : (
+                    editingEvent ? 'Guardar Cambios' : 'Crear Evento'
+                  )}
                 </Button>
-                <Button type="button" variant="outline" onClick={cancelForm}>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={cancelForm}
+                  disabled={formLoading}
+                >
                   Cancelar
                 </Button>
               </div>
@@ -241,7 +254,15 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
       {/* Lista de eventos */}
       <div className="grid gap-4">
         <h3 className="text-lg font-semibold text-gray-800">Próximos Eventos</h3>
-        {upcomingEvents.length === 0 ? (
+        
+        {loading ? (
+          <Card>
+            <CardContent className="p-6 text-center">
+              <Loader2 className="h-8 w-8 text-orange-500 mx-auto mb-4 animate-spin" />
+              <p className="text-gray-500">Cargando eventos...</p>
+            </CardContent>
+          </Card>
+        ) : upcomingEvents.length === 0 ? (
           <Card>
             <CardContent className="p-6 text-center">
               <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />

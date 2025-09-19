@@ -74,11 +74,7 @@ export default function Home() {
         <div className="absolute top-1/3 right-1/4 w-14 h-14 bg-green-400 rounded-full animate-bounce delay-1200"></div>
       </div>
       
-      <Header user={user} onLogout={() => {
-        // LOGOUT DIRECTO
-        localStorage.clear();
-        window.location.href = '/';
-      }} />
+      <Header user={user} />
       
       <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8 relative z-10">
         {/* Navegación entre vistas */}
