@@ -76,33 +76,35 @@ export default function Home() {
       
       <Header user={user} />
       
-      <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8 relative z-10">
-        {/* Navegación entre vistas */}
-        <div className="flex justify-center mb-6">
-          <div className="flex bg-white rounded-lg p-1 shadow-md">
+      <main className="max-w-6xl mx-auto px-2 sm:px-4 py-2 sm:py-8 relative z-10 min-h-screen">
+        {/* Navegación entre vistas - Mejorada para móvil */}
+        <div className="flex justify-center mb-4 sm:mb-6 px-2">
+          <div className="flex bg-white rounded-lg p-1 shadow-md w-full sm:w-auto max-w-sm sm:max-w-none">
             <Button
               onClick={() => setCurrentView('biblioteca')}
               variant={currentView === 'biblioteca' ? 'default' : 'ghost'}
-              className={`flex items-center gap-2 transition-all duration-300 ${
+              className={`flex items-center gap-1 sm:gap-2 transition-all duration-300 flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-2 ${
                 currentView === 'biblioteca' 
                   ? 'bg-orange-600 text-white shadow-md' 
                   : 'text-gray-600 hover:text-orange-600'
               }`}
             >
-              <Music className="h-4 w-4" />
-              Biblioteca Musical
+              <Music className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline sm:inline">Biblioteca</span>
+              <span className="xs:hidden">🎵</span>
             </Button>
             <Button
               onClick={() => setCurrentView('calendario')}
               variant={currentView === 'calendario' ? 'default' : 'ghost'}
-              className={`flex items-center gap-2 transition-all duration-300 ${
+              className={`flex items-center gap-1 sm:gap-2 transition-all duration-300 flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-2 ${
                 currentView === 'calendario' 
                   ? 'bg-orange-600 text-white shadow-md' 
                   : 'text-gray-600 hover:text-orange-600'
               }`}
             >
-              <Calendar className="h-4 w-4" />
-              Calendario
+              <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline sm:inline">Calendario</span>
+              <span className="xs:hidden">📅</span>
             </Button>
           </div>
         </div>

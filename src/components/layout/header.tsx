@@ -30,11 +30,11 @@ export function Header({ user }: HeaderProps) {
 
   return (
     <header className="bg-white border-b border-gray-200 relative z-50">
-      <div className="max-w-6xl mx-auto px-4 py-3 sm:py-4">
-        <div className="flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
+        <div className="flex items-center justify-between gap-2">
           {/* Logo y título */}
-          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-            <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-orange-500 flex-shrink-0">
+          <div className="flex items-center space-x-1 sm:space-x-3 min-w-0 flex-1">
+            <div className="relative w-8 h-8 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-orange-500 flex-shrink-0">
               <Image
                 src="/images/carnaval-logo.png"
                 alt="Logo Comparsa Moreno Polo"
@@ -48,11 +48,11 @@ export function Header({ user }: HeaderProps) {
                 }}
               />
               <div className="hidden w-full h-full bg-orange-500 flex items-center justify-center">
-                <Music className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                <Music className="h-3 w-3 sm:h-6 sm:w-6 text-white" />
               </div>
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
+              <h1 className="text-sm sm:text-2xl font-bold text-gray-900 truncate">
                 Comparsa Moreno Polo
               </h1>
               <p className="text-xs sm:text-sm text-orange-600 font-medium truncate">
@@ -63,9 +63,9 @@ export function Header({ user }: HeaderProps) {
           
           {/* Área de usuario y logout */}
           {user && (
-            <div className="flex items-center space-x-3 flex-shrink-0">
+            <div className="flex items-center space-x-1 sm:space-x-3 flex-shrink-0">
               {/* Info del usuario - solo desktop */}
-              <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-700">
+              <div className="hidden md:flex items-center space-x-2 text-sm text-gray-700">
                 <User className="h-4 w-4 text-gray-600" />
                 <span className="font-semibold text-gray-900">{user.username}</span>
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${
@@ -78,8 +78,8 @@ export function Header({ user }: HeaderProps) {
               </div>
               
               {/* Info del usuario - móvil */}
-              <div className="sm:hidden flex items-center">
-                <span className={`px-2 py-1 rounded-full text-xs font-semibold border ${
+              <div className="md:hidden flex items-center">
+                <span className={`px-1 py-1 rounded-full text-xs font-semibold border text-center min-w-[35px] ${
                   user.role === 'admin' 
                     ? 'bg-orange-100 text-orange-800 border-orange-200' 
                     : 'bg-blue-100 text-blue-800 border-blue-200'
@@ -96,13 +96,13 @@ export function Header({ user }: HeaderProps) {
                   flex items-center justify-center
                   bg-red-600 hover:bg-red-700 active:bg-red-800
                   text-white font-bold
-                  px-4 py-3 sm:px-6 sm:py-3
+                  px-2 py-2 sm:px-6 sm:py-3
                   rounded-lg
                   cursor-pointer select-none
                   transition-all duration-150
                   shadow-lg hover:shadow-xl
                   border-2 border-red-700
-                  min-w-[60px] min-h-[48px]
+                  min-w-[40px] min-h-[40px] sm:min-w-[60px] sm:min-h-[48px]
                   transform hover:scale-105 active:scale-95
                 "
                 style={{
@@ -110,7 +110,7 @@ export function Header({ user }: HeaderProps) {
                   touchAction: 'manipulation'
                 }}
               >
-                <LogOut className="h-5 w-5 mr-1" />
+                <LogOut className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-1" />
                 <span className="hidden sm:inline text-sm uppercase tracking-wide">
                   SALIR
                 </span>

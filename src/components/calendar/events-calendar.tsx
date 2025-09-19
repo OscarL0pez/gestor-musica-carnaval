@@ -119,20 +119,20 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 px-2 sm:px-0">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Calendar className="h-6 w-6 text-orange-600" />
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3">
+            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" />
             Calendario de Eventos
           </h2>
-          <p className="text-gray-600 mt-1">Ensayos, actuaciones y eventos de la comparsa</p>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">Ensayos, actuaciones y eventos de la comparsa</p>
         </div>
         {isAdmin && (
           <Button 
             onClick={() => setShowForm(true)}
-            className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 w-full sm:w-auto"
           >
             <Plus className="h-4 w-4 mr-2" />
             Nuevo Evento
@@ -142,13 +142,13 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
 
       {/* Formulario de evento (solo para administradores) */}
       {showForm && isAdmin && (
-        <Card className="border-orange-200">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-semibold mb-4">
+        <Card className="border-orange-200 mx-2 sm:mx-0">
+          <CardContent className="p-3 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
               {editingEvent ? 'Editar Evento' : 'Nuevo Evento'}
             </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Título *
@@ -252,21 +252,21 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
       )}
 
       {/* Lista de eventos */}
-      <div className="grid gap-4">
-        <h3 className="text-lg font-semibold text-gray-800">Próximos Eventos</h3>
+      <div className="grid gap-3 sm:gap-4">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800 px-2 sm:px-0">Próximos Eventos</h3>
         
         {loading ? (
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Loader2 className="h-8 w-8 text-orange-500 mx-auto mb-4 animate-spin" />
-              <p className="text-gray-500">Cargando eventos...</p>
+          <Card className="mx-2 sm:mx-0">
+            <CardContent className="p-4 sm:p-6 text-center">
+              <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500 mx-auto mb-3 sm:mb-4 animate-spin" />
+              <p className="text-gray-500 text-sm sm:text-base">Cargando eventos...</p>
             </CardContent>
           </Card>
         ) : upcomingEvents.length === 0 ? (
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">No hay eventos próximos programados</p>
+          <Card className="mx-2 sm:mx-0">
+            <CardContent className="p-4 sm:p-6 text-center">
+              <Calendar className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mx-auto mb-3 sm:mb-4" />
+              <p className="text-gray-500 text-sm sm:text-base">No hay eventos próximos programados</p>
               {isAdmin && (
                 <p className="text-gray-400 text-sm mt-2">
                   ¡Usa el botón &quot;Nuevo Evento&quot; para añadir el primer evento!
@@ -278,26 +278,26 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
           upcomingEvents.map((event) => {
             const IconComponent = eventTypeIcons[event.type];
             return (
-              <Card key={event.id} className="hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className={`p-2 rounded-full bg-opacity-20 ${eventTypeColors[event.type].split(' ')[0].replace('text-', 'bg-')}`}>
-                          <IconComponent className={`h-4 w-4 ${eventTypeColors[event.type].split(' ')[0]}`} />
+              <Card key={event.id} className="hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] sm:hover:scale-[1.02] mx-2 sm:mx-0">
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                        <div className={`p-1.5 sm:p-2 rounded-full bg-opacity-20 ${eventTypeColors[event.type].split(' ')[0].replace('text-', 'bg-')} flex-shrink-0`}>
+                          <IconComponent className={`h-3 w-3 sm:h-4 sm:w-4 ${eventTypeColors[event.type].split(' ')[0]}`} />
                         </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900">{event.title}</h4>
-                          <span className={`inline-block px-2 py-1 text-xs rounded-full border ${eventTypeColors[event.type]}`}>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{event.title}</h4>
+                          <span className={`inline-block px-2 py-1 text-xs rounded-full border mt-1 ${eventTypeColors[event.type]}`}>
                             {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
                           </span>
                         </div>
                       </div>
                       
-                      <div className="space-y-1 text-sm text-gray-600 ml-11">
+                      <div className="space-y-1 text-xs sm:text-sm text-gray-600 ml-7 sm:ml-11">
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-3 w-3" />
-                          <span>{new Date(event.date).toLocaleDateString('es-ES', { 
+                          <Calendar className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">{new Date(event.date).toLocaleDateString('es-ES', { 
                             weekday: 'long', 
                             year: 'numeric', 
                             month: 'long', 
@@ -305,26 +305,26 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
                           })}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Clock className="h-3 w-3" />
-                          <span>{event.time}</span>
+                          <Clock className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">{event.time}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <MapPin className="h-3 w-3" />
-                          <span>{event.location}</span>
+                          <MapPin className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">{event.location}</span>
                         </div>
                         {event.description && (
-                          <p className="text-gray-600 mt-2">{event.description}</p>
+                          <p className="text-gray-600 mt-2 text-xs sm:text-sm line-clamp-2">{event.description}</p>
                         )}
                       </div>
                     </div>
                     
                     {isAdmin && (
-                      <div className="flex gap-2 ml-4">
+                      <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 ml-2 sm:ml-4 flex-shrink-0">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => handleEdit(event)}
-                          className="h-8 w-8 p-0"
+                          className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-xs"
                         >
                           <Edit className="h-3 w-3" />
                         </Button>
@@ -332,7 +332,7 @@ export function EventsCalendar({ isAdmin = false }: EventsCalendarProps) {
                           size="sm"
                           variant="outline"
                           onClick={() => handleDelete(event.id)}
-                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                          className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-red-600 hover:text-red-700 text-xs"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
