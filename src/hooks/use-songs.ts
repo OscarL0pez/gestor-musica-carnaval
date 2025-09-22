@@ -149,16 +149,42 @@ export function useSongs() {
     }
   };
 
-  // Filtrar canciones por género
+  // Filtrar y ordenar canciones por género
   const filteredSongs = selectedGenre 
     ? songs.filter(song => song.genre === selectedGenre)
     : songs;
+
+  // Ordenar por género cuando se muestran todas las canciones
+  const sortedSongs = selectedGenre 
+    ? filteredSongs // Si hay filtro por género, mantener orden original
+    : filteredSongs.sort((a, b) => {
+        // Definir el orden de los géneros
+        const genreOrder = ['Presentación', 'Pasodoble', 'Cuplet', 'Estribillo', 'Popurrí'];
+        const aIndex = genreOrder.indexOf(a.genre);
+        const bIndex = genreOrder.indexOf(b.genre);
+        
+        // Si ambos géneros están en la lista, ordenar por posición
+        if (aIndex !== -1 && bIndex !== -1) {
+          if (aIndex !== bIndex) {
+            return aIndex - bIndex;
+          }
+          // Si son del mismo género, ordenar por título
+          return a.title.localeCompare(b.title);
+        }
+        
+        // Si solo uno está en la lista, ponerlo primero
+        if (aIndex !== -1) return -1;
+        if (bIndex !== -1) return 1;
+        
+        // Si ninguno está en la lista, ordenar por título
+        return a.title.localeCompare(b.title);
+      });
 
   // Géneros de carnaval disponibles
   const genres = ['Presentación', 'Pasodoble', 'Cuplet', 'Estribillo', 'Popurrí'];
 
   return {
-    songs: filteredSongs,
+    songs: sortedSongs,
     allSongs: songs,
     loading,
     selectedGenre,

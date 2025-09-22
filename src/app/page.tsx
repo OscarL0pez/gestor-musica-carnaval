@@ -41,8 +41,8 @@ export default function Home() {
     setShowForm(true);
   };
 
-  const handleDeleteSong = (songId: string) => {
-    deleteSong(songId);
+  const handleDeleteSong = (id: string) => {
+    deleteSong(id);
   };
 
   // Mostrar loading mientras se cargan auth y canciones
@@ -219,7 +219,7 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Lista de canciones */}
+            {/* Lista de canciones ordenadas por género */}
             {songs.length === 0 ? (
               <div className="text-center py-16">
                 <div className="w-20 h-20 mx-auto mb-4 bg-orange-100 rounded-full flex items-center justify-center">
