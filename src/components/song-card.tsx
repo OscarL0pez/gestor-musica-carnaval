@@ -101,19 +101,21 @@ export function SongCard({
 
   return (
     <Card className={`transition-all duration-300 hover:shadow-lg ${
-      isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''
+      isFullscreen ? 'fixed inset-0 z-50 rounded-none' : 'h-auto'
     }`}>
-      <CardContent className={`p-6 ${isFullscreen ? 'h-full overflow-auto' : ''}`}>
+      <CardContent className={`p-4 sm:p-6 ${isFullscreen ? 'h-full overflow-auto' : ''}`}>
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1 min-w-0">
-            <h3 className={`font-bold text-gray-900 mb-2 ${
-              isFullscreen ? 'text-3xl' : 'text-xl'
-            }`}>
-              {song.title}
-            </h3>
-            
-            <div className="flex items-center gap-3 mb-3">
+        <div className="mb-4">
+          {/* Título completo */}
+          <h3 className={`font-bold text-gray-900 mb-3 leading-tight break-words ${
+            isFullscreen ? 'text-3xl' : 'text-base sm:text-lg md:text-xl'
+          }`}>
+            {song.title}
+          </h3>
+          
+          {/* Controles y género */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
               <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium border ${getGenreColor(song.genre)}`}>
                 {getGenreIcon(song.genre)}
                 {song.genre}
@@ -121,7 +123,7 @@ export function SongCard({
               
               {song.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1">
-                  {song.tags.slice(0, 3).map((tag, index) => (
+                  {song.tags.slice(0, 2).map((tag, index) => (
                     <span 
                       key={index} 
                       className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs"
@@ -129,17 +131,16 @@ export function SongCard({
                       {tag}
                     </span>
                   ))}
-                  {song.tags.length > 3 && (
+                  {song.tags.length > 2 && (
                     <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
-                      +{song.tags.length - 3}
+                      +{song.tags.length - 2}
                     </span>
                   )}
                 </div>
               )}
             </div>
-          </div>
 
-          <div className="flex items-center gap-2 ml-4">
+            <div className="flex items-center gap-1 flex-shrink-0">
             {/* Botón de Audio Minimizado */}
             {song.audioFile && (
               <Button
@@ -209,6 +210,7 @@ export function SongCard({
                 <ChevronDown className="h-4 w-4" />
               )}
             </Button>
+          </div>
           </div>
         </div>
 

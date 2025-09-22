@@ -249,7 +249,7 @@ export default function Home() {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 auto-rows-auto">
                 {songs.map((song) => (
                   <SongCard
                     key={song.id}
