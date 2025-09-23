@@ -1,9 +1,16 @@
+export interface AudioFile {
+  id: string;
+  name: string;
+  url: string;
+  genre: 'Tenor' | 'Octavilla' | 'Segunda';
+}
+
 export interface Song {
   id: string;
   title: string;
   genre: 'Presentación' | 'Pasodoble' | 'Cuplet' | 'Estribillo' | 'Popurrí';
   lyrics: string;
-  audioFile?: string; // ruta o nombre del archivo de audio
+  audioFiles: AudioFile[]; // Array de objetos con más información
   addedDate: Date;
   tags: string[];
 }

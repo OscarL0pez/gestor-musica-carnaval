@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { SongFormData } from '@/types';
+import { SongFormData, AudioFile } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Save, X, Upload, CheckCircle } from 'lucide-react';
+import { Save, X, Upload, CheckCircle, Trash2, Edit2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 interface SongFormProps {
@@ -19,16 +19,18 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
     title: initialData?.title || '',
     genre: initialData?.genre || 'Presentación',
     lyrics: initialData?.lyrics || '',
-    audioFile: initialData?.audioFile || '',
+    audioFiles: initialData?.audioFiles || [],
     tags: initialData?.tags || [],
   });
 
   const [tagInput, setTagInput] = useState('');
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
+  const [editingAudioId, setEditingAudioId] = useState<string | null>(null);
+  const [editingAudioName, setEditingAudioName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form data being submitted:', formData);
     onSubmit(formData);
   };
 
@@ -37,51 +39,66 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    // Validar tipo de archivo
-    if (!file.type.startsWith('audio/')) {
-      alert('Por favor selecciona un archivo de audio válido');
-      return;
-    }
-
-    // Validar tamaño (máximo 50MB)
-    if (file.size > 50 * 1024 * 1024) {
-      alert('El archivo es demasiado grande. Máximo 50MB');
-      return;
+    // Validar archivos
+    for (const file of files) {
+      if (!file.type.startsWith('audio/')) {
+        alert(`${file.name} no es un archivo de audio válido`);
+        return;
+      }
+      if (file.size > 50 * 1024 * 1024) {
+        alert(`${file.name} es demasiado grande. Máximo 50MB`);
+        return;
+      }
     }
 
     setIsUploading(true);
+    const newAudioFiles: AudioFile[] = [];
     
     try {
-      // Generar nombre único para el archivo
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      
-      // Subir archivo a Supabase Storage
-      const { error } = await supabase.storage
-        .from('audio-files')
-        .upload(fileName, file);
+      for (const file of files) {
+        // Generar nombre único para el archivo
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        
+        // Subir archivo a Supabase Storage
+        const { error } = await supabase.storage
+          .from('audio-files')
+          .upload(fileName, file);
 
-      if (error) {
-        console.error('Error subiendo archivo:', error);
-        alert('Error al subir el archivo. Inténtalo de nuevo.');
-        return;
+        if (error) {
+          console.error('Error subiendo archivo:', error);
+          alert(`Error al subir ${file.name}. Inténtalo de nuevo.`);
+          continue;
+        }
+
+        // Obtener URL pública del archivo
+        const { data: { publicUrl } } = supabase.storage
+          .from('audio-files')
+          .getPublicUrl(fileName);
+
+        // Crear objeto AudioFile
+        const audioFile: AudioFile = {
+          id: fileName,
+          name: file.name.replace(/\.[^/.]+$/, ""), // Nombre sin extensión
+          url: publicUrl,
+          genre: 'Tenor' // Género por defecto
+        };
+
+        newAudioFiles.push(audioFile);
       }
 
-      // Obtener URL pública del archivo
-      const { data: { publicUrl } } = supabase.storage
-        .from('audio-files')
-        .getPublicUrl(fileName);
-
-      // Actualizar el formulario con la URL del archivo
-      setFormData(prev => ({ ...prev, audioFile: publicUrl }));
-      setUploadedFile(file.name);
+      // Actualizar el formulario con los archivos nuevos
+      setFormData(prev => ({ 
+        ...prev, 
+        audioFiles: [...prev.audioFiles, ...newAudioFiles] 
+      }));
       
     } catch (error) {
       console.error('Error:', error);
-      alert('Error inesperado al subir el archivo');
+      alert('Error inesperado al subir los archivos');
     } finally {
       setIsUploading(false);
     }
@@ -102,6 +119,68 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
       ...prev,
       tags: prev.tags.filter(tag => tag !== tagToRemove)
     }));
+  };
+
+  const removeAudioFile = async (indexToRemove: number) => {
+    const fileToRemove = formData.audioFiles[indexToRemove];
+    
+    try {
+      // Eliminar archivo de Supabase Storage
+      const fileName = fileToRemove.id; // El ID es el nombre del archivo en storage
+      const { error } = await supabase.storage
+        .from('audio-files')
+        .remove([fileName]);
+
+      if (error) {
+        console.error('Error eliminando archivo:', error);
+        alert('Error al eliminar el archivo del almacenamiento');
+        return;
+      }
+
+      // Actualizar la lista de archivos
+      setFormData(prev => ({
+        ...prev,
+        audioFiles: prev.audioFiles.filter((_, index) => index !== indexToRemove)
+      }));
+      
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error inesperado al eliminar el archivo');
+    }
+  };
+
+  const updateAudioFileName = (index: number, newName: string) => {
+    setFormData(prev => ({
+      ...prev,
+      audioFiles: prev.audioFiles.map((file, i) => 
+        i === index ? { ...file, name: newName } : file
+      )
+    }));
+  };
+
+  const updateAudioFileGenre = (index: number, newGenre: 'Tenor' | 'Octavilla' | 'Segunda') => {
+    setFormData(prev => ({
+      ...prev,
+      audioFiles: prev.audioFiles.map((file, i) => 
+        i === index ? { ...file, genre: newGenre } : file
+      )
+    }));
+  };
+
+  const startEditingAudioName = (index: number) => {
+    setEditingAudioId(formData.audioFiles[index].id);
+    setEditingAudioName(formData.audioFiles[index].name);
+  };
+
+  const saveAudioNameEdit = (index: number) => {
+    updateAudioFileName(index, editingAudioName);
+    setEditingAudioId(null);
+    setEditingAudioName('');
+  };
+
+  const cancelAudioNameEdit = () => {
+    setEditingAudioId(null);
+    setEditingAudioName('');
   };
 
   return (
@@ -164,6 +243,7 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
               <div className="flex-1">
                 <input
                   type="file"
+                  multiple
                   accept="audio/*"
                   onChange={handleFileChange}
                   className="hidden"
@@ -175,7 +255,7 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
                   className={`flex items-center justify-center h-12 sm:h-14 w-full border-2 border-dashed rounded-md transition-colors cursor-pointer touch-manipulation ${
                     isUploading 
                       ? 'border-orange-400 bg-orange-50 cursor-not-allowed' 
-                      : uploadedFile 
+                      : formData.audioFiles.length > 0
                         ? 'border-green-400 bg-green-50'
                         : 'border-gray-300 hover:border-orange-400'
                   }`}
@@ -183,27 +263,110 @@ export function SongForm({ onSubmit, onCancel, initialData }: SongFormProps) {
                   {isUploading ? (
                     <>
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-600 mr-2"></div>
-                      <span className="text-orange-600 text-sm sm:text-base">Subiendo...</span>
+                      <span className="text-orange-600 text-sm sm:text-base">Subiendo archivos...</span>
                     </>
-                  ) : uploadedFile ? (
+                  ) : formData.audioFiles.length > 0 ? (
                     <>
                       <CheckCircle className="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
-                      <span className="text-green-700 text-sm sm:text-base truncate">
-                        {uploadedFile.length > 20 ? `${uploadedFile.substring(0, 20)}...` : uploadedFile}
+                      <span className="text-green-700 text-sm sm:text-base">
+                        {formData.audioFiles.length} archivo{formData.audioFiles.length > 1 ? 's' : ''} subido{formData.audioFiles.length > 1 ? 's' : ''}
                       </span>
                     </>
                   ) : (
                     <>
                       <Upload className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
-                      <span className="text-gray-600 text-sm sm:text-base">Seleccionar archivo</span>
+                      <span className="text-gray-600 text-sm sm:text-base">Seleccionar archivos de audio</span>
                     </>
                   )}
                 </label>
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              Formatos: MP3, WAV, M4A, etc. (máximo 50MB)
+              Formatos: MP3, WAV, M4A, etc. (máximo 50MB por archivo). Puedes seleccionar múltiples archivos.
             </p>
+            
+            {/* Lista de archivos subidos */}
+            {formData.audioFiles.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <h4 className="text-sm font-medium text-gray-700">Archivos subidos:</h4>
+                {formData.audioFiles.map((audioFile, index) => (
+                  <div key={audioFile.id} className="flex items-center justify-between bg-gray-50 p-3 rounded">
+                    <div className="flex-1 mr-2 space-y-2">
+                      {editingAudioId === audioFile.id ? (
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Input
+                              value={editingAudioName}
+                              onChange={(e) => setEditingAudioName(e.target.value)}
+                              className="text-sm flex-1"
+                              placeholder="Nombre del archivo"
+                            />
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={() => saveAudioNameEdit(index)}
+                              className="h-7 px-2"
+                            >
+                              <CheckCircle className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="ghost"
+                              onClick={cancelAudioNameEdit}
+                              className="h-7 px-2"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <select
+                            value={audioFile.genre}
+                            onChange={(e) => updateAudioFileGenre(index, e.target.value as 'Tenor' | 'Octavilla' | 'Segunda')}
+                            className="w-full text-sm p-1 border border-gray-300 rounded"
+                          >
+                            <option value="Tenor">Tenor</option>
+                            <option value="Octavilla">Octavilla</option>
+                            <option value="Segunda">Segunda</option>
+                          </select>
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-700 font-medium">
+                              {audioFile.name}
+                            </span>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => startEditingAudioName(index)}
+                              className="h-7 px-2 ml-2"
+                            >
+                              <Edit2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs text-gray-500">Género:</span>
+                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                              {audioFile.genre}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => removeAudioFile(index)}
+                      className="text-red-500 hover:text-red-700 h-7 px-2"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Letra */}
