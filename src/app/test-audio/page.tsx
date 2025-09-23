@@ -37,12 +37,12 @@ CORO:
 ¡Luz de Andalucía!
 En ti se hace palma
 toda mi alegría.`,
-    audioFile: undefined, // Se establecerá cuando se suba audio
+    audioFiles: [], // Array vacío inicialmente
     tags: ['carnaval', 'tradicional', 'gaditano'],
     addedDate: new Date()
   };
 
-  const [currentSong, setCurrentSong] = useState<Song>(testSong);
+  const [currentSong] = useState<Song>(testSong);
 
   useEffect(() => {
     checkStorageStatus();
@@ -73,17 +73,6 @@ toda mi alegría.`,
     } finally {
       setIsConfiguring(false);
     }
-  };
-
-  const handleAudioUpdate = (songId: string, audioUrl: string) => {
-    console.log('Audio actualizado:', { songId, audioUrl });
-    setCurrentSong(prev => ({
-      ...prev,
-      audioFile: audioUrl
-    }));
-    
-    // Actualizar información del storage
-    checkStorageStatus();
   };
 
   return (
@@ -195,7 +184,6 @@ toda mi alegría.`,
           <SongCard
             song={currentSong}
             isAdmin={true}
-            onUpdateAudio={handleAudioUpdate}
             onEdit={(song) => console.log('Editar canción:', song)}
             onDelete={(id) => console.log('Eliminar canción:', id)}
           />
